@@ -1,0 +1,40 @@
+var settings = {
+  selectionDepth : 600, //minutes
+  minTweetFeedLength : 1300, //tweets
+  debug : true,
+  fullInfo : false
+};
+
+var twSearch = require("./tw.search.js");
+var util = require("./util/protection.from.stupid.errors.js");
+var stats = require("./tw.stats.getting.js");
+
+twSearch.init(settings);
+
+function getHashtagData(hashtag, callback) {
+  function callbackWrapper(respObj) {
+    respObj._testField = hashtag;
+    if (respObj.code === 200) {
+      console.log("______Global Event: " + hashtag);
+      if (settings.debug) {
+        console.log("#n6kYc %j", respObj.data);
+      }
+    }
+    callback(respObj);
+  };
+
+  return (function(hashtag, callback) {
+    twSearch.getGlobalTrendTweets(hashtag, function(resp) {
+      if (resp.code === 200) {
+        stats.getStats(resp, callbackWrapper);
+      }
+      else {
+        callback(resp);
+      }
+    });
+  })(hashtag, callbackWrapper);
+};
+
+module.exports = {
+  getHashtagData : getHashtagData
+};

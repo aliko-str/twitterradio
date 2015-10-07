@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>    <html class="lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>    <html class="lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html>
+  <!--<![endif]-->
+  <head>
+    <title>Twitter Radio</title>
+
+    <!-- Meta -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/frontend/client/static/twitter.css" />
+  </head>
+
+  <body>
+    <div class="lines">
+      <div class="line" id="line1"></div>
+      <div class="line" id="line2"></div>
+      <div class="line" id="line3"></div>
+      <div class="line" id="line4"></div>
+      <div class="line" id="line5"></div>
+      <div class="line" id="line6"></div>
+      <div class="line" id="line7"></div>
+    </div>
+
+    <div class="channels">
+      <span class="channel" id="channel1"></span>
+      <span class="channel" id="channel2"></span>
+      <span class="channel" id="channel3"></span>
+      <span class="channel" id="channel4"></span>
+      <span class="channel" id="channel5"></span>
+      <span class="channel" id="channel6"></span>
+      <span class="channel" id="channel7"></span>
+      <input type="text" class="channel" id="channel8">
+      </span>
+    </div>
+
+    <div id="indicator"></div>
+
+    <script type="text/javascript">
+      App = {};
+      App.defaultHashtags = <!--_listOfDefaultHashtags-->;
+      App.ioPort = <!--_ioPort-->;
+      App.ioUrl = "http://" + window.location.hostname + ":" + App.ioPort.toString() + "/client";
+    </script>
+    <script type="text/javascript" src="/frontend/sharedstuff/static/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/frontend/sharedstuff/static/socket.io-client-0.9/dist/socket.io.js"></script>
+    <!--[if lt IE 8]><script type="text/javascript" src="theme/scripts/json2.js"></script><![endif]-->
+    <script type="text/javascript" src="/frontend/client/static/client.main.js"></script>
+  </body>
+</html>
+
