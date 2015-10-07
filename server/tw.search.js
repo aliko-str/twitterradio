@@ -2,6 +2,7 @@ var tweetCleaner = require("./tw.text.processing.js");
 var util = require("./util/protection.from.stupid.errors.js");
 var twitter = require('ntwitter');
 require("./util/date.js");
+var tagLogger = new require("./loggers/tag.logger.js").Logger();
 
 //twitter listening
 var t = new twitter({
@@ -17,6 +18,7 @@ var tweetStorage = {
 };
 
 function noTweetsFount(callback, hashtag){
+	tagLogger.log(hashtag, 0, null);
   return callback(util.createCallbackObj(500, "No tweets associated with the hashtag :" + hashtag, null));
 }
 

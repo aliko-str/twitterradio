@@ -12,9 +12,11 @@ var stats = require("./tw.stats.getting.js");
 twSearch.init(settings);
 
 function getHashtagData(hashtag, callback) {
+	var __tweetNum;
   function callbackWrapper(respObj) {
     respObj._testField = hashtag;
     if (respObj.code === 200) {
+    	tagLogger.log(hashtag, __tweetNum, respObj.data);
       console.log("______Global Event: " + hashtag);
       if (settings.debug) {
         console.log("#n6kYc %j", respObj.data);
@@ -26,6 +28,7 @@ function getHashtagData(hashtag, callback) {
   return (function(hashtag, callback) {
     twSearch.getGlobalTrendTweets(hashtag, function(resp) {
       if (resp.code === 200) {
+      	__tweetNum = resp.data.length;
         stats.getStats(resp, callbackWrapper);
       }
       else {
