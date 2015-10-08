@@ -1,0 +1,58 @@
+{
+	"name": "atw-lab",
+	"version": "2.1.0",
+	"description": "A part of the TwitterRadio project. (UI + querying Twitter)",
+	"keywords": ["twitter", "Node.js", "application", "radio", "dont.really.care"],
+	"author": {
+		"name": "Aliaksei Miniukovich",
+		"email": "a.minyukovich@gmail.com",
+		"url": "http://disi.unitn.it/~miniukovich/"
+	},
+	"homepage": "http://www.atw-lab.com/me",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aliko-str/atw-lab"
+	},
+	"engines": {
+		"node": ">= 0.10.0",
+		"npm": ">= 1.0.0"
+	},
+
+	"bin": {},
+	"scripts": {
+		"start": "node ./server.js",
+		"predeploy": "echo im about to deploy",
+		"postdeploy": "echo ive deployed"
+	},
+	"main": "./main.js",
+	"bugs": {
+		"url": "https://github.com/aliko-str/atw-lab/issues"
+	},
+	"keywords": ["iamtoolazytothinkofany"],
+	"dependencies": {
+		"body-parser": "1.13.x",
+		"ejs": "2.3.x",
+		"errorhandler": "1.4.x",
+		"express": "4.13.x",
+		"n": "1.3.x",
+		"promise": "7.0.x",
+		"rimraf": "2.4.x",
+		"save-to": "1.0.x",
+		"socket.io": "1.3.x",
+		"socket.io-client": "1.3.x",
+		"winston": "1.0.x",
+		"q": "1.4.x",
+		"compression": "1.5.x",
+		"juice": "1.4.x",
+		"underscore": "1.8.x"
+	},
+	"devDependencies": {},
+	"preferGlobal": false,
+	"private": false,
+	"publishConfig": {
+		"registry": "https://your-private-hosted-npm.registry.nodejitsu.com"
+	},
+	"subdomain": "foobar",
+	"analyze": true,
+	"license": "MIT"
+}

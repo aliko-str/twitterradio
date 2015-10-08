@@ -1,5 +1,6 @@
 var path = require("path");
 process.env._logDir = path.join(__dirname, "logs");
+process.__debug = true;
 var hashtagStore = require("./stored.hashtags.js");
 var httpServer = require("./http.server.js");
 var oscServer = require("./osc.server.js");
@@ -18,24 +19,24 @@ var callbacks = {
 			scrollLogger.log(position, robinData.mood, robinData.freq, robinData.retw, robinData.noiseLevel, _currHashT);
 		}
 	},
+	// TODO change of API upstream: add id
 	callbackHashtag : function(hashtagObj) {
-		hashtagText = hashtagObj.hashtag;
+		const tagText = hashtagObj.hashtag;
+		const tagId = hashtagObj.id;
 		if(hasStarted) {
 			httpServer.sendLoadSignalToController(true);
-			hashtagStore.nullifyCustomizableHashtag();
+			var defer = hastagStore.updateHashtag(tagId, tagText);
 			var robinData = hashtagStore.getStatsToPlay();
 			oscServer.sendMusicParamsToRobin(robinData);
-			return twitter.getHashtagData(hashtagText, function(respObj) {
+			defer.then(function resolve() {
 				httpServer.sendLoadSignalToController(false);
-				if(respObj.code !== 200) {
-					httpServer.sendErrorSignalToController();
-					httpServer.sendCustomizableHashtagToClient();
-				} else {
-					hashtagStore.setCustomizableHashtag(hashtagText, respObj.data);
-					httpServer.sendCustomizableHashtagToClient(hashtagText);
-					var robinData = hashtagStore.getStatsToPlay();
-					oscServer.sendMusicParamsToRobin(robinData);
-				}
+				httpServer.sendCustomizableHashtagToClient(tagText);
+				var robinData = hashtagStore.getStatsToPlay();
+				oscServer.sendMusicParamsToRobin(robinData);
+			}, function reject(err) {
+				httpServer.sendLoadSignalToController(false);
+				httpServer.sendErrorSignalToController();
+				httpServer.sendCustomizableHashtagToClient();
 			});
 		}
 	},
@@ -50,11 +51,12 @@ var callbacks = {
 		httpServer.sendLoadSignalToController(true);
 		hasStarted = false;
 	},
-	callbackSwitchToNeutralHashtag : function() {
-		var _neutralHashtag = hashtagStore.setCustomizableHashtagToNeutral();
-		var robinData = hashtagStore.getStatsToPlay();
+	// TODO update upstream <-- send the id of hashtag to neutralize
+	callbackSwitchToNeutralHashtag : function(tagId) {
+		const origTag = hashtagStore.resetHashtag(tagId);
+		const robinData = hashtagStore.getStatsToPlay();
 		oscServer.sendMusicParamsToRobin(robinData);
-		httpServer.sendCustomizableHashtagToClient(_neutralHashtag.hashtag);
+		httpServer.sendCustomizableHashtagToClient(origTag.hashtag);
 	}
 };
 
@@ -62,23 +64,7 @@ var callbacks = {
 	httpServer = httpServer.init(callbacks, hashtagStore.getDefaultHashtags());
 	httpServer.run();
 	httpServer.sendLoadSignalToController(true);
-
-	var defaultHashtagCounter = hashtagStore.length;
-	var i = 0, len = hashtagStore.length;
-	for(; i < len; i++) {
-		twitter.getHashtagData(hashtagStore[i].hashtag, (function(i) {
-			return function(result) {
-				defaultHashtagCounter--;
-				if(result.code == 200) {
-					hashtagStore[i].stats = result.data;
-				} else {
-					hashtagStore[i] = null;
-					console.error("#B1VlO " + result.message);
-				}
-				if(!defaultHashtagCounter) {
-					httpServer.sendReadySignalToBackend();
-				}
-			};
-		})(i));
-	}
+	hashtagStore.onLoad(function() {
+		httpServer.sendReadySignalToBackend();
+	});
 })();
