@@ -78,7 +78,10 @@ function send(address, data) {
 
 module.exports = {
   sendMusicParamsToRobin: function(data){
-    return sendUDP("musicParams", data);
+  	sendUDP("valence", data[0]);
+  	sendUDP("arousal", data[1]);
+  	sendUDP("repetition", data[2]);
+    return sendUDP("noise", data[3]);
   },
   close: close
 };
