@@ -64,7 +64,8 @@ var callbacks = {
 	httpServer = httpServer.init(callbacks, hashtagStore.getDefaultHashtags());
 	httpServer.run();
 	httpServer.sendLoadSignalToController(true);
-	hashtagStore.onLoad(function() {
+	function cb(err) {
 		httpServer.sendReadySignalToBackend();
-	});
+	}
+	hashtagStore.initDefer.then(cb, cb);
 })();
