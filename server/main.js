@@ -30,13 +30,13 @@ var callbacks = {
 			oscServer.sendMusicParamsToRobin(robinData);
 			defer.then(function resolve() {
 				httpServer.sendLoadSignalToController(false);
-				httpServer.sendCustomizableHashtagToClient(tagText);
+				httpServer.sendCustomizableHashtagToClient(tagId, tagText);
 				var robinData = hashtagStore.getStatsToPlay();
 				oscServer.sendMusicParamsToRobin(robinData);
 			}, function reject(err) {
 				httpServer.sendLoadSignalToController(false);
 				httpServer.sendErrorSignalToController();
-				httpServer.sendCustomizableHashtagToClient();
+				httpServer.sendCustomizableHashtagToClient(tagId);
 			});
 		}
 	},
@@ -51,7 +51,6 @@ var callbacks = {
 		httpServer.sendLoadSignalToController(true);
 		hasStarted = false;
 	},
-	// TODO update upstream <-- send the id of hashtag to neutralize
 	callbackSwitchToNeutralHashtag : function(tagId) {
 		const origTag = hashtagStore.resetHashtag(tagId);
 		const robinData = hashtagStore.getStatsToPlay();
@@ -61,7 +60,7 @@ var callbacks = {
 };
 
 (function runAll() {
-	httpServer = httpServer.init(callbacks, hashtagStore.getDefaultHashtags());
+	httpServer = httpServer.init(callbacks, hashtagStore.getHashtags());
 	httpServer.run();
 	httpServer.sendLoadSignalToController(true);
 	function cb(err) {

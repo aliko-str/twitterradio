@@ -24,13 +24,13 @@ var callbacks = {
 	callbackStop : null,
 	callbackSwitchToNeutralHashtag : null
 };
-var _listOfDefaultHashtags = [];
+var allHashtags = [];
 
 var init = function(_callbacks, defaultHashtags) {
-	for (var i in _callbacks) {
+	for(var i in _callbacks) {
 		callbacks[i] = _callbacks[i];
 	}
-	_listOfDefaultHashtags = defaultHashtags;
+	allHashtags = defaultHashtags;
 	return this;
 };
 
@@ -43,7 +43,7 @@ var SampleApp = function() {
 		self.port = 8087;
 	};
 	self.terminator = function(sig) {
-		if ( typeof sig === "string") {
+		if( typeof sig === "string") {
 			console.log('%s: Received %s - terminating sample app ...', Date(Date.now()), sig);
 			process.exit(1);
 		}
@@ -75,40 +75,53 @@ var SampleApp = function() {
 			res.status(404).send("There is no such page here...");
 		};
 		self.getRoutes["/client?"] = function(req, res) {
-			var status = 200;
-			try {
-				bodyToSend = fs.readFileSync(path.resolve(__dirname, "../frontend/client/index.html"), {
-					encoding : "UTF-8"
-				});
-				bodyToSend = bodyToSend.replace("<!--_listOfDefaultHashtags-->", JSON.stringify(_listOfDefaultHashtags));
-				bodyToSend = bodyToSend.replace("<!--_ioPort-->", _ioPort.toString());
-			} catch(err) {
-				console.log("#JXInb" + err.toString());
-				bodyToSend = "Something went wrong :(";
-				status = 500;
-			}
-			res.status(status).send(bodyToSend);
+			// var status = 200;
+			// try {
+			// bodyToSend = fs.readFileSync(path.resolve(__dirname,
+			// "../frontend/client/index.html"), {
+			// encoding : "UTF-8"
+			// });
+			// bodyToSend = bodyToSend.replace("<!--allHashtags-->",
+			// JSON.stringify(allHashtags));
+			// bodyToSend = bodyToSend.replace("<!--_ioPort-->", _ioPort.toString());
+			// } catch(err) {
+			// console.log("#JXInb" + err.toString());
+			// bodyToSend = "Something went wrong :(";
+			// status = 500;
+			// }
+			// TODO update EJS
+			res.status(200).render("client", {
+				allHashtags : allHashtags,
+				_ioPort : _ioPort.toString()
+			});
 		};
 		self.getRoutes["/admin?"] = function(req, res) {
-			var status = 200;
-			try {
-				bodyToSend = fs.readFileSync(path.resolve(__dirname, "../frontend/admin/index.html"), {
-					encoding : "UTF-8"
-				});
-				bodyToSend = bodyToSend.replace("<!--_ioPort-->", _ioPort.toString());
-				bodyToSend = bodyToSend.replace("<!--_isReadyToBeRun-->", _isReadyToBeRun.toString());
-			} catch(err) {
-				console.log("#qRwya" + err.toString());
-				bodyToSend = "Something went wrong :(";
-				status = 500;
-			}
-			res.status(status).send(bodyToSend);
+			// var status = 200;
+			// try {
+			// bodyToSend = fs.readFileSync(path.resolve(__dirname,
+			// "../frontend/admin/index.html"), {
+			// encoding : "UTF-8"
+			// });
+			// bodyToSend = bodyToSend.replace("<!--_ioPort-->", _ioPort.toString());
+			// bodyToSend = bodyToSend.replace("<!--_isReadyToBeRun-->",
+			// _isReadyToBeRun.toString());
+			// } catch(err) {
+			// console.log("#qRwya" + err.toString());
+			// bodyToSend = "Something went wrong :(";
+			// status = 500;
+			// }
+			// res.status(status).send(bodyToSend);
+			res.status(200).render("admin", {
+				_isReadyToBeRun : _isReadyToBeRun,
+				_ioPort : _ioPort.toString(),
+				allHashtags : allHashtags
+			});
 		};
 		// self.putRoutes["/position?"] = function(req, res) {
-			// res.setHeader('Content-Type', 'text/html');
-			// res.status(200).end("Position Noted");
-			// console.log("#nKoQi Received position: %j", req.body.position);
-			// callbacks.callbackPosition(req.body.position);
+		// res.setHeader('Content-Type', 'text/html');
+		// res.status(200).end("Position Noted");
+		// console.log("#nKoQi Received position: %j", req.body.position);
+		// callbacks.callbackPosition(req.body.position);
 		// };
 		self.postRoutes["/hashtag?"] = function(req, res) {
 			res.setHeader('Content-Type', 'text/html');
@@ -129,29 +142,45 @@ var SampleApp = function() {
 			callbacks.callbackStop();
 		};
 		self.postRoutes["/neutralhashtag?"] = function(req, res) {
-			res.setHeader('Content-Type', 'text/html');
-			res.status(200).end("Neutral Hashtag Signal Noted");
+			res.setHeader('Content-Type', "application/json");
+			try {
+				var tagId = parseInt(req.body.tagId);
+			} catch (e) {
+				return res.status(400).send({
+					msg : "Bad tag id, it should be a number; it was " + req.body.tagId
+				});
+			}
+			res.status(200).end({
+				msg : "Neutral Hashtag Signal Noted"
+			});
 			console.log("#ALvsO Received signal NEUTRAL HASHTAG");
-			callbacks.callbackSwitchToNeutralHashtag();
+			callbacks.callbackSwitchToNeutralHashtag(tagId);
 		};
 	};
 
 	self.initializeServer = function() {
+		const clientPath = path.join(__dirname, "..", "frontend", "client");
+		const adminPath = path.join(__dirname, "..", "frontend", "admin");
+
 		self.createRoutes();
 		self.app = express();
 		self.app.use(express.urlencoded());
 		self.app.use(express.json());
-		self.app.use("/frontend/client/static", express.static(path.resolve(__dirname, "../frontend/client")));
-		self.app.use("/frontend/admin/static", express.static(path.resolve(__dirname, '../frontend/admin')));
+		self.app.set("views", [clientPath, adminPath]);
+		self.app.set("view cache", !process.__debugMode);
+		self.app.set("view engine", "ejs");
+
+		self.app.use("/frontend/client/static", express.static(clientPath));
+		self.app.use("/frontend/admin/static", express.static(adminPath));
 		self.app.use("/frontend/sharedstuff/static", express.static(path.resolve(__dirname, '../frontend/sharedstuff')));
-		for (var r in self.getRoutes) {
+		for(var r in self.getRoutes) {
 			self.app.get(r, self.getRoutes[r]);
 		}
-		for (var r in self.postRoutes) {
+		for(var r in self.postRoutes) {
 			self.app.post(r, self.postRoutes[r]);
 		}
 		// for (var r in self.putRoutes) {
-			// self.app.put(r, self.putRoutes[r]);
+		// self.app.put(r, self.putRoutes[r]);
 		// }
 		self.app.use(self.app.router);
 	};
@@ -186,7 +215,6 @@ function sendLoadSignalToController(isStart) {
 	}));
 	req.end();
 }
-
 function sendSignalStrengthToController(signalStrength) {
 	var options = {
 		hostname : _controllerParams.ip,
@@ -203,7 +231,6 @@ function sendSignalStrengthToController(signalStrength) {
 	}));
 	req.end();
 }
-
 function sendStartSignalToController() {
 	var options = {
 		hostname : _controllerParams.ip,
@@ -220,7 +247,6 @@ function sendStartSignalToController() {
 	}));
 	req.end();
 }
-
 function sendErrorSignalToController() {
 	var options = {
 		hostname : _controllerParams.ip,
@@ -237,16 +263,13 @@ function sendErrorSignalToController() {
 	}));
 	req.end();
 }
-
 function sendPositionToClient(position) {
 	client.emit("position", position);
 }
-
 //input: hashtag text or undefined if not loaded for some reasons.
-function sendCustomizableHashtagToClient(hashtagText) {
-	client.emit("customizableHashtag", hashtagText);
+function sendCustomizableHashtagToClient(tagId, hashtagText) {
+	client.emit("newHashtag", tagId, hashtagText);
 }
-
 function sendReadySignalToBackend() {
 	_isReadyToBeRun = true;
 	backend.emit("ready", "just ready :)");
@@ -267,6 +290,6 @@ module.exports = {
 	sendCustomizableHashtagToClient : sendCustomizableHashtagToClient,
 	sendReadySignalToBackend : sendReadySignalToBackend,
 	sendStartSignalToController : sendStartSignalToController,
-	sendErrorSignalToController: sendErrorSignalToController
+	sendErrorSignalToController : sendErrorSignalToController
 };
 

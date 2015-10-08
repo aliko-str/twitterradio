@@ -38,10 +38,11 @@ $("#stopButton").click(function(ev){
   });
 });
 
-$("#switchButton").click(function(ev){
+$("[role=toDefault] input").click(function(ev){
+	const tagId = $(this).attr("dataId");
   $.ajax("/neutralhashtag/", {
     type : "POST",
-    data : {},
+    data : {tagId: tagId},
     contentType: "application/json",
     dataType : "JSON",
     complete : function(jqXHR, textStatus) {

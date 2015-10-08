@@ -70,8 +70,10 @@ hashtagStore.getStatsFullNoise = function() {
 	return [0, 0, 0, 1];
 };
 
-hashtagStore.getDefaultHashtags = function() {
-	return initialHashtags;
+hashtagStore.getHashtags = function() {
+	return this.map(function(el){
+		return el;
+	});
 };
 
 hashtagStore.getStatsToPlay = function(position){

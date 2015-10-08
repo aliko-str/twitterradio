@@ -2,123 +2,139 @@
 
 @import url(http://fonts.googleapis.com/css?family=Special+Elite:400,600,700);
 *, a:focus {
-  outline: none !important;
+	outline: none !important;
 }
 button:focus {
-  outline: none !important;
+	outline: none !important;
 }
 button::-moz-focus-inner {
-  border: 0;
+	border: 0;
 }
 
 html, body {
-  width: 100% :
-  height: 100%;
+	width: 100%;
+	height: 100%;
 }
 
 body {
-  margin-top: -10px;
-  font-family: 'Special Elite', cursive;
-  background: url(wood.jpg);
-  font-size: 22px;
+	margin-top: -10px;
+	font-family: 'Special Elite', cursive;
+	background: url(wood.jpg);
+	font-size: 22px;
 }
 
 .lines {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
 }
 
 .line {
-  width: 3px;
-  height: 100%;
-  background-color: black;
-  position: absolute;
-  opacity: 0.5;
+	width: 3px;
+	height: 100%;
+	background-color: black;
+	position: absolute;
+	opacity: 0.5;
 }
 
 #line1 {
-  left: 12.5%;
+	left: 12.5%;
 }
 #line2 {
-  left: 25%;
+	left: 25%;
 }
 #line3 {
-  left: 37.5%;
+	left: 37.5%;
 }
 #line4 {
-  left: 50%;
+	left: 50%;
 }
 #line5 {
-  left: 62.5%;
+	left: 62.5%;
 }
 #line6 {
-  left: 75%
+	left: 75%
 }
 #line7 {
-  left: 87.5%
+	left: 87.5%
 }
 
 .channels {
-  position: absolute;
-  width: 100%;
-  height: 50%;
-  top: 25%;
-  left: 0;
+	position: absolute;
+	width: 100%;
+	height: 50%;
+	top: 25%;
+	left: 0;
 }
 
 .channel {
-  font-size: 22px;
-  width: 9%;
-  position: absolute;
-  top: 47%;
-  background-color: rgba(255,255,255,0.8);;
-  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
-  padding: 5px;
-  padding-bottom: 0px;
-  border: 0px;
-  font-family: 'Special Elite', cursive;
-  text-align: left;
+	font-size: 22px;
+	width: 9%;
+	position: absolute;
+	top: 47%;
+	background-color: rgba(255,255,255,0.8);
+	box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.5);
+	padding: 5px;
+	padding-bottom: 0px;
+	border: 0px;
+	font-family: 'Special Elite', cursive;
+	text-align: left;
 }
 
-#channel1 {
-  left: 0;
+/*#channel1 {
+	left: 0;
 }
 #channel2 {
-  left: 12.5%;
+	left: 12.5%;
 }
 #channel3 {
-  left: 25%;
+	left: 25%;
 }
 #channel4 {
-  left: 37.5%;
+	left: 37.5%;
 }
 #channel5 {
-  left: 50%;
+	left: 50%;
 }
 #channel6 {
-  left: 62.5%;
+	left: 62.5%;
 }
 #channel7 {
-  left: 75%;
+	left: 75%;
 }
 #channel8 {
-  left: 87.5%;
-}
+	left: 87.5%;
+}*/
 
 ::-webkit-input-placeholder {
-  color: black;
+	color: black;
 }
 
 #indicator {
-  display: none;
-  width: 16px;
-  height: 100%;
-  left: 440px;
-  background-color: rgb(200,0,0);
-  opacity: 0.4;
-  position: absolute;
-  -webkit-transition: 1s;
+	display: none;
+	width: 16px;
+	height: 100%;
+	left: 440px;
+	background-color: rgb(200,0,0);
+	opacity: 0.4;
+	position: absolute;
+	-webkit-transition: 1s;
+}
+
+input {
+	/*float:right;*/
+	/*width:200px;*/
+	/*border:2px solid #dadada;*/
+	/*border-radius:7px;*/
+	font-size: 20px;
+	/*padding:5px;*/
+	/*margin-top:-10px;    */
+}
+
+input:focus {
+	outline: none;
+	/*border-color:#9ecaed;*/
+	box-shadow: 0 0 10px #9ecaed;
 }

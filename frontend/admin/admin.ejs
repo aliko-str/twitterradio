@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin: Twitter Radio</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="/frontend/sharedstuff/static/bootstrap.css" />
+    <link rel="stylesheet" href="/frontend/admin/static/admin.css" />
+  </head>
+  <body>
+    <script type="text/javascript">
+      App = {};
+      App.ioPort = <%= _ioPort %>;
+      App._isReadyToBeRun = <%= _isReadyToBeRun %>;
+      App._allHashtags = <%- allHashtags %>;
+      App.ioUrl = "http://" + window.location.hostname + ":" + App.ioPort.toString() + "/backend";
+    </script>
+    <div class="container-fluid">
+    	<div class="row central">
+    		<div class="col-md-3" id="message">
+    			The 'ready' signal <b>HAS NOT</b> been received.
+    		</div>
+    		<div class="col-md-3">
+    			<input type="button" class="btn btn-lg btn-primary" id="startButton" value="Run it All"/>
+    		</div>
+    		<div class="col-md-3">
+    			<input type="button" id="stopButton" class="btn btn-lg btn-danger" value="Stop it All"/>
+    		</div>
+    		<div class="col-md-3" role="toDefault">
+    			<% for(var i = 0, ilen = App._allHashtags.length; i < ilen; i++ ) {%>
+    				<input type="button" class="btn btn-lg bt-warn " dataId="<%= App._allHashtags[i].id %>" value="Switch to default <%= i %> hashtag"/>
+    			<% } %>
+    		</div>
+    	</div>
+    </div>
+    <script type="text/javascript" src="/frontend/sharedstuff/static/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/frontend/sharedstuff/static/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/frontend/sharedstuff/static/socket.io-client-0.9/dist/socket.io.js"></script>
+    <script type="text/javascript" src="/frontend/admin/static/admin.main.js"></script>
+  </body>
+</html>
+
