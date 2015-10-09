@@ -4,8 +4,8 @@ const express = require('express');
 const http = require("http");
 
 var _mainServerParams = {
-	ip: "10.196.193.42",
-  // ip : "127.0.0.1",
+	// ip: "10.196.193.42",
+  ip : "127.0.0.1",
   port : 8087
 };
 

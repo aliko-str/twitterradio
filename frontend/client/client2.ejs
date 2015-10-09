@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>    <html class="lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>    <html class="lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html>
+	<!--<![endif]-->
+	<head>
+		<title>Twitter Radio</title>
+
+		<!-- Meta -->
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="/frontend/client/static/twitter2.css" />
+	</head>
+
+	<body>
+		<script type="text/javascript">
+			App = {};
+			App.allHashtags =  <%- _allHashtags %>;
+			App.ioPort =  <%= _ioPort %>;
+			App.ioUrl = "http://" + window.location.hostname + ":" + App.ioPort.toString() + "/client";
+		</script>
+		<div id="all">
+			<div id="box"></div>
+			<div class="lines">
+				<% const aPosStep = 100 / allHashtags.length;  %>
+				<% for(var i = 0, ilen = allHashtags.length; i < ilen; i++ ) { %>
+				<div class="line" dataTagId="<%= allHashtags[i].id %>" id="line<%= i + 1 %>"></div>
+				<% } %>
+			</div>
+
+			<div class="channels">
+				<% for(var i = 0, ilen = allHashtags.length; i < ilen; i++ ) { %>
+				<input autocomplete="off" type="text" maxlength="15" placeholder="<%= allHashtags[i].hashtag %>" class="channel" dataTagId="<%= allHashtags[i].id %>" id="channel<%= i + 1 %>" />
+				<% } %>
+			</div>
+
+			<div id="indicator"></div>
+		</div>
+
+		<script type="text/javascript" src="/frontend/sharedstuff/static/jquery-2.0.3.min.js"></script>
+		<script type="text/javascript" src="<%= _ioJSUrl %>/socket.io/socket.io.js"></script>
+		<!--[if lt IE 8]><script type="text/javascript" src="theme/scripts/json2.js"></script><![endif]-->
+		<script type="text/javascript" src="/frontend/client/static/client.main.js"></script>
+	</body>
+</html>
+

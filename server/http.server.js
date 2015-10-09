@@ -75,7 +75,7 @@ var SampleApp = function() {
 			res.status(404).send("There is no such page here...");
 		};
 		self.getRoutes["/client?"] = function(req, res) {
-			res.status(200).render("client", {
+			res.status(200).render("client2", {
 				_allHashtags : JSON.stringify(allHashtags),
 				_ioPort : _ioPort.toString(),
 				allHashtags: allHashtags,

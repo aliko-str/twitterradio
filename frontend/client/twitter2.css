@@ -1,0 +1,158 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,800,700,600&subset=latin,latin-ext);
+
+@import url(http://fonts.googleapis.com/css?family=Special+Elite:400,600,700);
+*, a:focus {
+  outline: none !important;
+}
+button:focus {
+  outline: none !important;
+}
+button::-moz-focus-inner {
+  border: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin-top: -10px;
+  font-family: 'Open Sans', cursive;
+  font-size: 22px;
+    text-transform:uppercase;
+    background: url(brushed.jpg);
+}
+
+.lines {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.line {
+  width: 2px;
+  height: 10%;
+    top:52%;
+  background-color: black;
+  position: absolute;
+  opacity: 0.4;
+}
+
+#line1 {
+  left: 225px;
+}
+#line2 {
+  left: 375px;
+}
+#line3 {
+  left: 525px;
+}
+#line4 {
+  left: 675px;
+}
+#line5 {
+  left: 825px;
+}
+
+.channels {
+  position: absolute;
+  width: 100%;
+  height: 50%;
+  top: 25%;
+  left: 0;
+}
+
+.channel {
+  font-size: 22px;
+  width: 18%;
+  position: absolute;
+  padding: 5px;
+  padding-bottom: 0px;
+  border: 0px;
+  font-family:  'open sans', cursive;
+  text-align: center;
+    opacity:0.6;
+    color: transparent;
+    text-shadow: 0 0 2px rgba(0,0,0,1);
+}
+
+#channel1 {
+    left: 130px;
+    top: 40%;
+}
+#channel2 {
+    left: 280px;
+    top: 75%
+}
+#channel3 {
+    left: 430px;
+    top: 40%;
+}
+#channel4 {
+    left: 580px;
+    top: 75%;
+}
+#channel5 {
+    left: 730px;
+    top: 40%
+}
+
+::-webkit-input-placeholder {
+  color: black;
+}
+
+#indicator {
+  display: none;
+  width: 16px;
+  height: 100%;
+  left: 440px;
+  background-color: rgb(200,0,0);
+  opacity: 0.6;
+  position: absolute;
+  -webkit-transition: 1s;
+  box-shadow: 3px 10px 5px rgba(0,0,0,1);
+}
+
+#box {
+    width: 904px;
+    height: 400px;
+    position: absolute;
+    left:90px;
+    top:182px;
+}
+
+
+input{
+background:none;
+    color: transparent;
+    text-shadow: 0 0 1px rgba(0,0,0,0.5);
+        text-transform:uppercase;
+
+}
+
+::-webkit-input-placeholder {
+  color: transparent;
+    text-shadow: 0 0 2px rgba(0,0,0,1);
+        text-transform:uppercase;
+
+}
+
+input:focus {
+	outline: none;
+	color: black;
+	text-shadow: 0 0 10px #9ecaed;
+}
+
+#refresh{
+    position:absolute;
+    left:50px;
+    top:520px; 
+    width:120px;
+    height:120px;
+    background-color:black;
+    opacity:0.02;
+    border-radius:100px;
+}
