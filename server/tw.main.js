@@ -8,6 +8,7 @@ var settings = {
 var twSearch = require("./tw.search.js");
 var util = require("./util/protection.from.stupid.errors.js");
 var stats = require("./tw.stats.getting.js");
+const tagLogger = new require("./loggers/tag.logger.js").Logger();
 
 twSearch.init(settings);
 

@@ -19,27 +19,29 @@
   <body>
     <script type="text/javascript">
       App = {};
-      App.allHashtags = <%- allHashtags %>;
+      App.allHashtags = <%- _allHashtags %>;
       App.ioPort = <%= _ioPort %>;
       App.ioUrl = "http://" + window.location.hostname + ":" + App.ioPort.toString() + "/client";
     </script>
     <div class="lines">
-    	<% for(var i = 0, ilen = App.allHashtags.length; i < ilen; i++ ) { %>
-      	<div class="line" dataTagId="<%= App.allHashtags[i].id %>" id="line<%= i + 1 %>"></div>
+    	<% const aPosStep = 100 / allHashtags.length;  %>
+    	<% for(var i = 0, ilen = allHashtags.length; i < ilen; i++ ) { %>
+      	<div class="line" style="left:<%= aPosStep*(i+0.5) %>%;" dataTagId="<%= allHashtags[i].id %>" id="line<%= i + 1 %>"></div>
       <% } %>
     </div>
 
     <div class="channels">
-    	<% const aPosStep = 100 / App.allHashtags.length;  %>
-    	<% for(var i = 0, ilen = App.allHashtags.length; i < ilen; i++ ) { %>
-      	<input type="text" maxlength="15" placeholder="<%= App.allHashtags[i].hashtag %>" style="left:<%= aPosStep*(i+0.5) %>;" class="channel" dataTagId="<%= App.allHashtags[i].id %>" id="channel<%= i + 1 %>" />
+    	<% for(var i = 0, ilen = allHashtags.length; i < ilen; i++ ) { %>
+    		<div class="tagContainer" style="width:<%= aPosStep-0.5 %>%;">
+    			<input autocomplete="off" type="text" maxlength="15" placeholder="<%= allHashtags[i].hashtag %>" class="channel" dataTagId="<%= allHashtags[i].id %>" id="channel<%= i + 1 %>" />
+    		</div>
       <% } %>
     </div>
 
     <div id="indicator"></div>
 
     <script type="text/javascript" src="/frontend/sharedstuff/static/jquery-2.0.3.min.js"></script>
-    <script type="text/javascript" src="/frontend/sharedstuff/static/socket.io-client-0.9/dist/socket.io.js"></script>
+    <script type="text/javascript" src="<%= _ioJSUrl %>/socket.io/socket.io.js"></script>
     <!--[if lt IE 8]><script type="text/javascript" src="theme/scripts/json2.js"></script><![endif]-->
     <script type="text/javascript" src="/frontend/client/static/client.main.js"></script>
   </body>

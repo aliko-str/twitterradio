@@ -1,5 +1,5 @@
 {
-	"name": "atw-lab",
+	"name": "TwitterRadio",
 	"version": "2.1.0",
 	"description": "A part of the TwitterRadio project. (UI + querying Twitter)",
 	"keywords": ["twitter", "Node.js", "application", "radio", "dont.really.care"],
@@ -35,9 +35,6 @@
 		"errorhandler": "1.4.x",
 		"express": "4.13.x",
 		"n": "1.3.x",
-		"promise": "7.0.x",
-		"rimraf": "2.4.x",
-		"save-to": "1.0.x",
 		"socket.io": "1.3.x",
 		"socket.io-client": "1.3.x",
 		"winston": "1.0.x",

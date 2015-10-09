@@ -1,3 +1,9 @@
+TODO: 
+
+a) fix client.html errors
+b) normalization errors
+c) loggin errors
+
 
 
 CmFXH

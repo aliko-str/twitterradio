@@ -6,18 +6,25 @@ const sentObjStub = {
   retw: "-",
   repl: "-"
 };
+var glovalSwitch = false;
 
 module.exports = {
 	Logger: function(){
-		const _logObj = new Logger("scrolling.log", "scroll"); 
-		for(var i in _logObj){
-			this[i] = _logObj[i];
-		}
+		Logger.call(this, "hashtags.log", "tags");
 		const _origLogF = this.log;
 		this.log = function(hashtag, tweetNum, sentObj){
 			sentObj = sentObj || sentObjStub;
-			return _origLogF.call(this, [hashtag, tweetNum, sentObj.mood, sentObj.freq, sentObj.repl, sentObj.retw].join("\t"));
+			if(glovalSwitch){
+				return _origLogF.call(this, [hashtag, tweetNum, sentObj.mood, sentObj.freq, sentObj.repl, sentObj.retw].join("\t"));
+			}
+			return null;
 		};
 		return this;
+	},
+	on: function(){
+		glovalSwitch = true;
+	},
+	off: function(){
+		glovalSwitch = false;
 	}
 };

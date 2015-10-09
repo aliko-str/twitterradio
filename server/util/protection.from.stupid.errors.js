@@ -9,7 +9,8 @@ function createCallbackObj(code, message, data) {
 	return obj;
 }
 function Statistic(mood, freq, retwAmount, replAmount) {
-	this.mood = mood;
+	// scale mood from -1to1 interval to 0to1
+	this.mood = (mood+1)/2;
 	this.freq = freq;
 	this.retw = retwAmount;
 	this.repl = replAmount;

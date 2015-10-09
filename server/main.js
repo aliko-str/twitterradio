@@ -7,6 +7,7 @@ var oscServer = require("./osc.server.js");
 var twitter = require("./tw.main.js");
 var hasStarted = false;
 var scrollLogger = new require("./loggers/scroll.logger.js").Logger();
+var tagLogger = require("./loggers/tag.logger.js");
 
 var callbacks = {
 	callbackPosition : function(position) {
@@ -16,27 +17,25 @@ var callbacks = {
 			httpServer.sendPositionToClient(position);
 			httpServer.sendSignalStrengthToController(robinData[3]);
 			var _currHashT = hashtagStore._getCurrHashtag();
-			scrollLogger.log(position, robinData.mood, robinData.freq, robinData.retw, robinData.noiseLevel, _currHashT);
+			scrollLogger.log(position, robinData[0], robinData[1], robinData[2], robinData[3], _currHashT.hashtag);
 		}
 	},
-	// TODO change of API upstream: add id
-	callbackHashtag : function(hashtagObj) {
-		const tagText = hashtagObj.hashtag;
-		const tagId = hashtagObj.id;
+	callbackHashtag : function(tagId, tagText) {
 		if(hasStarted) {
 			httpServer.sendLoadSignalToController(true);
-			var defer = hastagStore.updateHashtag(tagId, tagText);
+			var theTag = hashtagStore.updateHashtag(tagId, tagText);
 			var robinData = hashtagStore.getStatsToPlay();
 			oscServer.sendMusicParamsToRobin(robinData);
-			defer.then(function resolve() {
+			theTag.once("statsChanged", function onChanged(ifOk) {
 				httpServer.sendLoadSignalToController(false);
-				httpServer.sendCustomizableHashtagToClient(tagId, tagText);
-				var robinData = hashtagStore.getStatsToPlay();
-				oscServer.sendMusicParamsToRobin(robinData);
-			}, function reject(err) {
-				httpServer.sendLoadSignalToController(false);
-				httpServer.sendErrorSignalToController();
-				httpServer.sendCustomizableHashtagToClient(tagId);
+				if(ifOk){
+					httpServer.sendCustomizableHashtagToClient(tagId, tagText);
+					var robinData = hashtagStore.getStatsToPlay();
+					oscServer.sendMusicParamsToRobin(robinData);
+				}else{
+					httpServer.sendErrorSignalToController();
+					httpServer.sendCustomizableHashtagToClient(tagId);
+				}
 			});
 		}
 	},
@@ -44,18 +43,23 @@ var callbacks = {
 		hasStarted = true;
 		httpServer.sendLoadSignalToController(false);
 		httpServer.sendStartSignalToController();
+		tagLogger.on();
 	},
 	callbackStop : function() {
 		var robinData = hashtagStore.getStatsFullNoise();
 		oscServer.sendMusicParamsToRobin(robinData);
 		httpServer.sendLoadSignalToController(true);
 		hasStarted = false;
+		tagLogger.off();
 	},
 	callbackSwitchToNeutralHashtag : function(tagId) {
-		const origTag = hashtagStore.resetHashtag(tagId);
-		const robinData = hashtagStore.getStatsToPlay();
-		oscServer.sendMusicParamsToRobin(robinData);
-		httpServer.sendCustomizableHashtagToClient(origTag.hashtag);
+		throw new Error("NOT IMPLEMENTED");
+		// const origTag = hashtagStore.resetHashtag(tagId);
+		// console.log("SOCKET CLIENT SEND DETAILS: " + tagId + " -- " + origTag.hashtag.toString());
+		// httpServer.sendResetHashtagToClient(tagId, origTag.hashtag.toString());
+		// console.log("THE ORIG TAG: %j", origTag);
+		// const robinData = hashtagStore.getStatsToPlay();
+		// oscServer.sendMusicParamsToRobin(robinData);
 	}
 };
 
@@ -64,7 +68,8 @@ var callbacks = {
 	httpServer.run();
 	httpServer.sendLoadSignalToController(true);
 	function cb(err) {
+		console.log("FINISHED INIT\n");
 		httpServer.sendReadySignalToBackend();
 	}
-	hashtagStore.initDefer.then(cb, cb);
+	hashtagStore.initPromise.then(cb, cb);
 })();

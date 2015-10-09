@@ -1,11 +1,13 @@
 var express = require('express');
+const bodyParser = require('body-parser');
+var compression = require("compression");
 
 var SampleApp = function(callbackPosition) {
 	var self = this;
 
 	self.setupVariables = function() {
 		self.ipaddress = "127.0.0.1";
-		self.port = 8087;
+		self.port = 8089;
 	};
 	self.terminator = function(sig) {
 		if( typeof sig === "string") {
@@ -29,10 +31,14 @@ var SampleApp = function(callbackPosition) {
 	};
 
 	self.initializeServer = function() {
-		self.createRoutes();
 		self.app = express();
-		self.app.use(express.urlencoded());
-		self.app.use(express.json());
+		self.app.use(compression());
+		self.app.use(bodyParser.json({
+			extended : true
+		}));
+		self.app.use(bodyParser.urlencoded({
+			extended : true
+		}));
 		self.app.put("/position?", function(req, res) {
 			res.setHeader('Content-Type', 'text/html');
 			res.status(200).end("Position Noted");

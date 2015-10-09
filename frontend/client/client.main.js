@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function() {
 	var ioClient = io.connect(App.ioUrl);
 	var isIndicatorShown = false;
 	const minVirtPos = 0;
@@ -8,30 +8,29 @@ $(document).ready(function(){
 	const jqIndicator = $("#indicator");
 	var _lastIndicatorPos = 0;
 	var _syncHashtagSubmitted = false;
-	
-	function getCurrTagNum(virtPosition){
+
+	function getCurrTagNum(virtPosition) {
 		const tagNum = Math.floor(virtPosition / aTagWidth) + 1;
 		const withinTagPosition = virtPosition % aTagWidth;
-		if(withinTagPosition > aTagWidth * (1/4) && withinTagPosition < aTagWidth * (3/4)){
+		if(withinTagPosition > aTagWidth * (1 / 4) && withinTagPosition < aTagWidth * (3 / 4)) {
 			return tagNum;
 		}
 		return null;
 	}
-	
 	// SPEED-UP setups
 	const jqAllChannels = $(".channels input");
 	const channelArr = [];
-	for(var i = 0, ilen = App.allHashtags.length; i < ilen; i++){
-		channelArr[i+1] = $(".channels input[id=channel" + (i+1) + "]");
+	for(var i = 0, ilen = App.allHashtags.length; i < ilen; i++) {
+		channelArr[i + 1] = $(".channels input[id=channel" + (i + 1) + "]");
 	}
 	// SPEED-UP setups
-	function _highlightATag(tagNum){
+	function _highlightATag(tagNum) {
 		jqAllChannels.blur();
-		if(tagNum !== null){
-			channelArr[i+1].focus();
+		if(tagNum !== null) {
+			channelArr[tagNum].focus();
 		}
 	}
-	
+
 	ioClient.on("position", function(virtPosition) {
 		if(virtPosition === null || virtPosition === undefined) {
 			return console.error("Can't set the position because it's: " + virtPosition.toString());
@@ -44,49 +43,36 @@ $(document).ready(function(){
 			var realCoordPosition = virtPosition * realPosMultiplier;
 			jqIndicator.css("left", realCoordPosition.toString() + "px");
 			_highlightATag(getCurrTagNum(virtPosition));
-	
-			// if(!_syncHashtagSubmitted) {
-				// if(isIndicatorOverLastHashtag(virtPosition)) {
-					// if(!isIndicatorOverLastHashtag(_lastIndicatorPos)) {
-						// window.setTimeout(function() {
-							// jqCustomizableHashtag.focus();
-						// }, 1);
-					// }
-				// } else {
-					// if(isIndicatorOverLastHashtag(_lastIndicatorPos)) {
-						// window.setTimeout(function() {
-							// jqCustomizableHashtag.blur();
-						// }, 1);
-					// }
-				// }
-			// }
 			_lastIndicatorPos = virtPosition;
 		}
 	});
-	
-	ioClient.on("newHashtag", function(tagId, approvedHashtag) {
+
+	function _updateTag(tagId, approvedHashtag) {
 		_syncHashtagSubmitted = false;
 		const jqChannel = $(".channels input[dataTagId=" + tagId + "]");
-		if(!jqChannel.length){
+		if(!jqChannel.length) {
 			return console.error("DOM error: Channel with dataTagId " + tagId + " not found");
 		}
-		jqChannel.prop("disabled", "false");
-		if(approvedHashtag) {
-			jqChannel.css("opacity", 1);
-		}else{
-			jqChannel.prop("placeholder", "No Signal: " + jqChannel.prop("placeholder", ""));
+		jqChannel.removeAttr("disabled");
+		jqChannel.val("");
+		if(!approvedHashtag) {
+			jqChannel.prop("placeholder", "no signal");
 		}
+		jqChannel.css("opacity", 1);
 		_lastIndicatorPos = 0;
 		// so the person sees new hashtag approved and if s/he moves indicator again -
 		// it re-does "focus"
-	});
+	}
 	
+	ioClient.on("resetHashtag", _updateTag);
+	ioClient.on("newHashtag", _updateTag);
+
 	function sendCustomizableHashtagCandidate(tagId, _proposedHashtag) {
 		$.ajax("/hashtag/", {
 			type : "POST",
 			data : JSON.stringify({
 				hashtag : _proposedHashtag,
-				tagId: tagId
+				tagId : tagId
 			}),
 			contentType : "application/json",
 			dataType : "JSON",
@@ -95,17 +81,17 @@ $(document).ready(function(){
 			}
 		});
 	}
-	
+
 	(function runClient() {
-		$(document).on("ontouchmove", function(event){
-	      event.preventDefault();
-	 	});
+		$(document).on("ontouchmove", function(event) {
+			event.preventDefault();
+		});
 		if(!App.allHashtags.length) {
 			console.error("No hashtags sent from the server: " + App.allHashtags.length);
 		}
 		var jqChannels = $(".channels input").keypress(function(ev) {
 			var code = ev.keyCode || ev.which;
-			const jqInp = $(this);
+			const jqInp = $(ev.target);
 			if(code == 13) {
 				var _proposedHashtag = jqInp.val();
 				if(_proposedHashtag) {
@@ -121,11 +107,11 @@ $(document).ready(function(){
 				}
 			}
 		}).blur(function(ev) {
-			const jqInp = $(this);
+			const jqInp = $(ev.target);
 			if(jqInp.val()) {
 				jqInp.val("");
 			}
 		});
 	})();
 
-});
+}); 

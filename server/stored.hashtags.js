@@ -1,4 +1,4 @@
-var classes = require("./util/protection.from.stupid.errors.js");
+const Hashtag = require("./Hashtag.js").Hashtag;
 const initialHashtags = ["london", "syria", "fun", "loss", "FIFA"];
 const hashtagStore = [];
 const Q = require("q");
@@ -16,12 +16,14 @@ const minMax = {
 		retw : 0,
 		repl : 0
 	},
-	reset: function(){
+	reset : function() {
 		const self = this;
-		hashtagStore.forEach(function(aTag){
-			_.each(self.min, function(val, key){
-				self.min[key] = Math.min(self.min[key], aTag.stats[key]);
-				self.max[key] = Math.max(self.min[key], aTag.stats[key]); 
+		hashtagStore.forEach(function(aTag) {
+			_.each(self.min, function(val, key) {
+				if(aTag.stats && aTag.stats[key]) {
+					self.min[key] = Math.min(self.min[key], aTag.stats[key]);
+					self.max[key] = Math.max(self.max[key], aTag.stats[key]);
+				}
 			});
 		});
 	}
@@ -29,7 +31,7 @@ const minMax = {
 
 var _minPos = 0;
 var _maxPos = 1024;
-var _denominator = (_maxPos - _minPos) / (initialHashtags.length + 2);
+var _denominator = (_maxPos - _minPos) / initialHashtags.length;
 var _fullNoiseThrs = [_denominator * 0.15, _denominator * (1 - 0.15)];
 var _fullSignalThrs = [_denominator * 0.4, _denominator * (1 - 0.4)];
 var _partialNoiseThrs1 = [_fullNoiseThrs[0], _fullSignalThrs[0]];
@@ -61,8 +63,10 @@ function _getNoisePortion(localPos) {
 }
 
 hashtagStore._getCurrHashtag = function(intPos) {
-	var ind = Math.floor((intPos - _denominator * 0.5) / _denominator);
-	console.log("Index: %d, hashtag: %s", ind, "" + initialHashtags[ind]);
+	intPos = intPos || _position;
+	console.log("INDICATOR POSITION: " + intPos);
+	var ind = Math.floor(intPos / _denominator);
+	console.log("Index: %d, hashtag: %s", ind, "" + this[ind].hashtag);
 	return this[ind];
 };
 
@@ -71,15 +75,15 @@ hashtagStore.getStatsFullNoise = function() {
 };
 
 hashtagStore.getHashtags = function() {
-	return this.map(function(el){
+	return this.map(function(el) {
 		return el;
 	});
 };
 
-hashtagStore.getStatsToPlay = function(position){
+hashtagStore.getStatsToPlay = function(position) {
 	var stats = this._getStatsToPlay(position);
-	_.each(stats, function(val, key){
-		if(minMax.min[key] !== undefined){
+	_.each(stats, function(val, key) {
+		if(minMax.min[key] !== undefined) {
 			stats[key] = (stats[key] - minMax.min[key]) / (minMax.max[key] - minMax.min[key]);
 		}
 	});
@@ -88,34 +92,35 @@ hashtagStore.getStatsToPlay = function(position){
 
 hashtagStore._getStatsToPlay = function(position) {
 	position = position || _position;
+	position = Math.min(position, _maxPos-1);
 	_position = position;
-	// var noiseLevel = 0.0;
-	var _stats = this._getCurrHashtag(position);
-	if(!_stats) {
-		_stats = {
-			mood : 0.5,
-			freq : 0.5,
-			retw : 0.5,
-			noiseLevel: 1.0
-		};
-	} else {
-		_stats = _stats.stats;
-		var localPos = (position - _denominator * 0.5) % _denominator;
+	var aTag = this._getCurrHashtag(position);
+	var noiseLevel = 1.0;
+	if(aTag.stats) {
+		// var localPos = (position - _denominator * 0.5) % _denominator;
+		var localPos = position % _denominator;
 		if(_isFullNoise(localPos)) {
-			_stats.noiseLevel = 1.0;
+			noiseLevel = 1.0;
 		} else if(_isFullSignal(localPos)) {
-			_stats.noiseLevel = 0.0;
+			noiseLevel = 0.0;
 		} else {
-			_stats.noiseLevel = _getNoisePortion(localPos);
+			noiseLevel = _getNoisePortion(localPos);
 		}
 	}
+	_stats = _.extendOwn({
+		mood : 0.5,
+		freq : 0.5,
+		retw : 0.5
+	}, aTag.stats);
+	_stats["noiseLevel"] = noiseLevel;
 	console.log("Stats: %j", _stats);
 	return _stats;
 };
 
 hashtagStore.updateHashtag = function(id, tagText) {
 	const aTag = this.getById(id);
-	return aTag.update(tagText);
+	aTag.update(tagText);
+	return aTag;
 };
 
 hashtagStore.resetHashtag = function(id) {
@@ -146,24 +151,25 @@ hashtagStore.getById = function(id) {
 	return this._getCurrHashtag(_position);
 };
 
-hashtagStore.initDefer = Q.defer();
+const initDefer = Q.defer();
 var semaphore = initialHashtags.length;
 function onHashtagLoad(err) {
 	semaphore--;
 	if(!semaphore) {
-		hashtagStore.forEach(function(el){
-			el.off("statsChanged", onHashtagLoad);
-		})
-		hashtagStore.initDefer.resolve();
+		hashtagStore.forEach(function(el) {
+			el.removeListener("statsChanged", onHashtagLoad);
+		});
+		initDefer.resolve();
 	}
 }
 for(var i = 0; i < initialHashtags.length; i++) {
-	hashtagStore[i] = new classes.Hashtag(i, initialHashtags[i]);
+	hashtagStore[i] = new Hashtag(i, initialHashtags[i]);
 	hashtagStore[i].on("statsChanged", onHashtagLoad);
-	hashtagStore[i].on("statsChanged", function(){
+	hashtagStore[i].on("statsChanged", function() {
 		minMax.reset();
 	});
 }
+hashtagStore.initPromise = initDefer.promise;
 
 module.exports = hashtagStore;
 

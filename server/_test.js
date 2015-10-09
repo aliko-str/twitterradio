@@ -1,8 +1,11 @@
-var express = require('express');
-var http = require("http");
+const bodyParser = require('body-parser');
+const compression = require("compression");
+const express = require('express');
+const http = require("http");
 
 var _mainServerParams = {
-  ip : "127.0.0.1",
+	ip: "10.196.193.42",
+  // ip : "127.0.0.1",
   port : 8087
 };
 
@@ -57,12 +60,16 @@ var SampleApp = function() {
   self.initializeServer = function() {
     self.createRoutes();
     self.app = express();
-    self.app.use(express.urlencoded());
-    self.app.use(express.json());
+		self.app.use(compression());
+		self.app.use(bodyParser.json({
+			extended : true
+		}));
+		self.app.use(bodyParser.urlencoded({
+			extended : true
+		}));
     for (var r in self.postRoutes) {
       self.app.post(r, self.postRoutes[r]);
     }
-    self.app.use(self.app.router);
   };
 
   self.initialize = function() {
@@ -87,7 +94,7 @@ function sendCurrPosition() {
     path : '/position',
     method : 'PUT',
     headers : {
-      "content-type" : "application/json"
+      'Content-Type': "application/json"
     }
   };
   var req = http.request(options);
@@ -95,7 +102,7 @@ function sendCurrPosition() {
     console.log('TEST CONTROLLER: Problem with request to main server: ' + e.message);
   });
   req.write(JSON.stringify({
-    "position" : _position
+    position : _position
   }));
   req.end();
 }

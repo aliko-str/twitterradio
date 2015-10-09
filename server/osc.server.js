@@ -4,6 +4,7 @@ var dgram = require("dgram");
 
 var settings = {
   clientPort : 11000,
+  // hostIp: "10.196.214.228"
   hostIp: "localhost"
 };
 
@@ -23,7 +24,6 @@ function close(){
     }
 }
 
-
 function sendUDP(address, data) {
   var args = [];
   for (var i = 0; i < data.length; i++) {
@@ -36,7 +36,7 @@ function sendUDP(address, data) {
     address : "/" + address,
     args : args
   });
-  //console.log("Buffer to send: %s", buf.toString());
+  // console.log("An Array: Buffer to send: %s", buf.toString());
   return udp.send(buf, 0, buf.length, settings.clientPort, settings.hostIp);
 }
 
@@ -78,10 +78,11 @@ function send(address, data) {
 
 module.exports = {
   sendMusicParamsToRobin: function(data){
-  	sendUDP("valence", data[0]);
-  	sendUDP("arousal", data[1]);
-  	sendUDP("repetition", data[2]);
-    return sendUDP("noise", data[3]);
+  	console.log("qoqwo4 DATA to send to OSC" + data + "\n");
+  	sendUDP("valence", [data[0]]);
+  	sendUDP("arousal", [data[1]]);
+  	sendUDP("repetition", [data[2]]);
+    return sendUDP("noise", [data[3]]);
   },
   close: close
 };

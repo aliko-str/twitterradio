@@ -1,16 +1,17 @@
-var util = require("util");
-var winston = require("winston");
-var fs = require("fs");
-var _ = require("underscore");
+const util = require("util");
+const winston = require("winston");
+const fs = require("fs");
+const _ = require("underscore");
+const path = require("path");
 
 function Logger(_logFileName, _loggerName) {
 	this.logger = new (winston.Logger)({
 		'transports' : [new (winston.transports.File)({
-			filename : process.env._logDir + _logFileName,
+			filename : path.join(process.env._logDir, _logFileName),
 			json : false,
 			maxsize : 102400,
 			maxFiles : 15,
-			'timestamp' : true
+			'timestamp' : false
 		})]
 	});
 	this.logger._logFileName = _logFileName;
@@ -25,7 +26,7 @@ function Logger(_logFileName, _loggerName) {
 }
 function log(strToLog) {
 	var logger = this.logger;
-	strToLog = Date.now() + "\t" + strToLog + "\n";
+	strToLog = (new Number(Date.now())) + "\t" + strToLog;
 	logger.info(strToLog);
 	return strToLog;
 }
